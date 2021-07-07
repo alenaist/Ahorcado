@@ -1,0 +1,186 @@
+* {
+    margin:0;
+    padding:0;
+}
+
+h1, button, p {
+    font-family: 'Lora', serif;
+}
+
+h1.title {
+    z-index: 2;
+    margin-top: 1.5rem;
+    font-size: 60px;
+    letter-spacing: 0.5rem;
+    color: #fff;
+    padding: 0 20px;
+    background-color: black;
+}
+
+.main-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100vw;
+    background-color: rgb(225, 238, 249);
+    border-bottom: 30px solid firebrick;
+}
+
+.kid-container {
+    display: flex;
+    justify-content: center;
+}
+
+.kid {
+    margin-top: 50px;
+    z-index: 5;
+    width: 200px;
+    left: calc(50% - 125px);
+}
+
+.rope {
+    z-index: 1;
+    height: 267px;
+    width: 10px;
+    position: absolute;
+    left: calc(50% - 8px);
+    top: -100px;
+    background-color: #e3c965;
+}
+
+.start-page {
+    display:flex;
+    flex-direction: column;
+    height: 100vh;
+    font-size: 2rem;
+    align-items: center;
+}
+
+.start-button {
+    border: none; 
+    font-size: 20px;
+    font-weight: 600;
+    box-shadow: 1px 1px 2px 1px rgba(0,0,0,0.3);
+    margin-top: 30px;
+    padding: 15px 50px;
+    cursor: pointer;
+}
+
+.start-button:active {
+    box-shadow: none;
+}
+
+.selected-letter-input {
+    width: 60px;
+    height: 60px;
+    text-align: center;
+}
+
+#displayedWord {
+    margin-top: 20px;   
+    display:flex; 
+}
+
+.hanged {
+    display: inline-block;
+    position: relative;
+}
+
+.hanged::after {
+    content: '';
+    position: absolute;
+    width: 8px;
+    height: 50px;
+    left: calc(50% - 4px);
+    top: -30px;
+    background-color: black;
+}
+
+h1 {
+    margin-top: 1.5rem;
+    font-family: 'Lora', serif;
+}
+
+span.underline {
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    border-bottom: 10px solid red;
+    margin-left: 10px;
+    font-size: 50px;
+}
+
+.underline.win {
+    border-bottom-color: forestgreen;
+}
+
+.space {
+    margin-right: 20px;
+}
+
+.chancesLeft {
+    margin-bottom: 0;
+}
+
+.wrongLetters {
+    margin-bottom: 10px;
+    font-size:20px;
+    letter-spacing: 0.03rem;
+}
+
+
+.graphics-container {
+    display: flex;
+    width: 100%;
+}
+.user-display-container {
+    margin-top: 20px;
+    display: flex;
+    justify-content: center;
+    align-items: flex-end;
+}
+
+.wrong-letters {
+    padding: 10px;
+    height: 319px;
+    background-color:#caa472;
+    transform: rotate(3deg);
+    margin-top: 30px;
+    right: -80px;
+    position: relative;
+}
+
+.wrong-letters::before {
+    content: '';
+    position: absolute;
+    width: 60px;
+    height:  200px;
+    background-color:#caa472;
+    bottom: -95px;
+    left: calc(50% - 30px);
+    transform: rotate(-3deg);
+}
+
+.wrong-letters,
+.kid-container,
+.executioner {
+    flex: 1;
+}
+
+.wrong-selected-letter {
+    padding: 10px;
+    display:inline-block;
+    background-color: #7b5d34;
+    font-size: 30px;
+    margin-right: 10px;
+    text-transform: uppercase;
+    box-shadow: 2px 1px 1px black;
+}
+
+#description {
+    border: 1px solid black;
+    margin: 20px 40px;
+    padding: 10px;
+}
