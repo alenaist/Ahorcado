@@ -6,27 +6,23 @@ let wrongGuessedLetters = [];
 let guessOpportunities = 6;
 let lettersLeftToGuess = [];
 let wordDescriptionHtml = document.getElementById('description');
+let chancesLeftDisplay =  document.getElementById('chancesLeft');
 let letterGuess = document.getElementById('letter');
 let wordDisplay = document.getElementById('displayedWord');
-
+let restartButton = document.getElementsByClassName('restart-button')[0];
+let wrongLettersContainer = document.getElementById('wrongLetters');
+let loadingMessage = document.getElementsByClassName('loading-text')[0];
 wordDescriptionHtml.style.display = 'none';
 
-
-let setupRandomWord = async () => {
-    await fetch('https://spanish-random-words.p.rapidapi.com/random',{
-        headers: {
-            'x-rapidapi-key': '313804c0b6mshe3be3db0ce29dcap1f2df8jsnf3b7b339dba4',
-            'x-rapidapi-host': 'spanish-random-words.p.rapidapi.com'
-          }
-    }).then(response => response.json()).then(data => data);
-}
-
-
 let setupGame = () => {   
-    if(word != undefined) {
+    document.getElementsByClassName('kid')[0].style.visibility = 'visible';
+    document.getElementsByClassName('rope')[0].style.visibility = 'visible';
+    document.getElementsByClassName('saved-svg')[0].style.visibility = 'hidden';
+    document.getElementsByClassName('chancesLeftText')[0].style.display = 'block';
+    document.getElementsByClassName('win-message')[0].style.display = 'none';
 
+    if(word != undefined) {
         wordArray = word.normalize('NFD').replace(/[\u0300-\u036f]/g, "").split('');
-        console.log(wordArray);
         lettersLeftToGuess = word.normalize('NFD').replace(/[\u0300-\u036f]/g, "").split('');
 
         wordArray.forEach((item) => {
@@ -37,22 +33,27 @@ let setupGame = () => {
             } else {
                 element.className = 'underline'
             }
-
-            console.log(item);
             
             wordDisplay.appendChild(element);
         });
 
         letterGuess.addEventListener('input', checkLetter);
+        restartButton.addEventListener('click',resetGame);
         updateChances();
     }
 }
 
 let checkLetter = (e) => {
-    let selectedLetter = e.target.value;
+    let selectedLetter = e.target.value.toLowerCase();
+
     let isRepeatedGuess = guessedLetters.includes(selectedLetter);
     let letterIsInWord = wordArray.includes(selectedLetter);
 
+    let helpInfo = document.getElementById('help-info');
+
+    if(helpInfo) {
+        helpInfo.remove();
+    } 
 
     //check if repeated
     if (!isRepeatedGuess) {
@@ -73,20 +74,27 @@ let checkLetter = (e) => {
                })
 
                if(lettersLeftToGuess.length == 0) {
-                   console.log('GANASTE CAPOO');
-                   letterGuess = document.getElementById('letter').disabled = true;
+                    //win
+                    document.getElementsByClassName('kid')[0].style.visibility = 'hidden';
+                    document.getElementsByClassName('rope')[0].style.visibility = 'hidden';
+                    document.getElementsByClassName('saved-svg')[0].style.visibility = 'visible';
+
+                    document.getElementsByClassName('chancesLeftText')[0].style.display = 'none';
+                    document.getElementsByClassName('win-message')[0].style.display = 'block';
+
+                    savedTL.play();
+
+                   letterGuess.disabled = true;
+                   restartButton.style.display = 'block';
 
                    let underlines = document.getElementsByClassName('underline');
                    for(let i = 0; i < underlines.length; i++) {
-                        console.log(underlines[i])
                         underlines[i].classList.add('win');
                    };
                    showDescription();
                }
            };
         })
-
-
         } else {
             //picked letter was incorrect
             //we add the new wrong letter too the wrrong letters array
@@ -97,23 +105,17 @@ let checkLetter = (e) => {
                 wrongGuessedLetters.push(selectedLetter);
                 guessOpportunities--;
                 
-
                 let selectedWrongLetter = document.createElement('span');
                 selectedWrongLetter.className = 'wrong-selected-letter';
                 selectedWrongLetter.textContent = selectedLetter;
                 selectedWrongLetter.style.transform = 
                 "rotate(" + ['', '-'][Math.floor(Math.random() * ['',''].length)] + Math.floor((Math.random() * (5 - 1) + 1)) + "deg)"
 
-
-
                 document.getElementById('wrongLetters').appendChild(selectedWrongLetter);
 
-
-
-                console.log();
-
                 updateChances();
-                console.log(wrongGuessedLetters);
+                wrongLetterTL.play(0);
+    
                 if(guessOpportunities <= 0) {
                     gameOver();
 
@@ -127,22 +129,24 @@ let checkLetter = (e) => {
                     }
             } else {
                 //if wrong selection is repeated
-                console.log('you already selected that one and it was incorrect')
-                console.log(wrongGuessedLetters);
             }
         }
 
     } else {
-        console.log('ya elegiste esa');
+        //user already picked same correct onoe
     }
 
-    e.target.value = '';
+    setTimeout(() => {
+        e.target.value = '';
+    },200)
 }
 
 let gameOver = () => {
-    console.log('game over ma dude')
-    letterGuess = document.getElementById('letter').disabled = true;
+    letterGuess.disabled = true;
     showDescription();
+    wrongLetterTL.pause();
+    deathTL.play(0);
+    restartButton.style.display = 'block';
 }
 
 let showDescription = () => {
@@ -152,19 +156,95 @@ let showDescription = () => {
     }
 }
 
+//gsap animations
+let wrongLetterTL = gsap.timeline({ yoyo : true, repeat: 1, paused: true });
+wrongLetterTL.to('.kid-container',{ top: -20 });
+wrongLetterTL.to('#mouthPayne1',{ display: 'block'},'<');
+wrongLetterTL.to('#mouthClosed',{ opacity: '0' },'<');
+wrongLetterTL.to('#feet1',{ transformOrigin:"70% 10%", rotate: -20 }, "<");
+wrongLetterTL.to('#feet2',{ transformOrigin:"30% 10%", rotate: 20}, "<");
+wrongLetterTL.to('#g30560',{ transformOrigin:"50% 50%", scaleX:0.7}, "<");
+
+let deathTL = gsap.timeline({ paused: true });
+deathTL.to('.kid-container',{ duration: 0.8, top: -80 });
+deathTL.to('#feet1',{ transformOrigin:"70% 10%", rotate: -50 }, "<");
+deathTL.to('#feet2',{ transformOrigin:"30% 10%", rotate: 50}, "<");
+deathTL.to('#head',{transformOrigin:"50% 100%", rotate: 20}, "<");
+deathTL.to('#g30560',{transformOrigin:"50% 50%", rotate: 10}, "<");
+deathTL.to('#g30560',{ transformOrigin:"50% 50%", scaleX:0.55}, "<");
+deathTL.to('.kid-container', { transformOrigin:"50% 0%", rotate: 2, repeat: 10, yoyo: true, duration: 3}, Elastic.easeOut);
+
+let loadingTL = gsap.timeline();
+loadingTL.to('.fa-hourglass',{rotate: '365deg', stagger: 0.2, duration: 2, repeat: '-1'})
+
+let winMessage = document.querySelectorAll('.win-message span');
+let savedTL = gsap.timeline({paused: true});
+savedTL.to(winMessage, {
+    transform: 'scale(1.5)',
+    stagger: 0.2,
+    repeat: '-1',
+    yoyo: true
+})
+
+let winAnimationL= gsap.timeline();
+winAnimationL.to('.left-arm',{
+    transformOrigin:"90% 90%",
+    rotate: '-20deg',
+    repeat: '-1',   
+    yoyo: true,
+    ease:Linear.easeNone
+})
+
+let winAnimationR= gsap.timeline();
+winAnimationR.to('.rigth-arm',{
+    transformOrigin:"10% 90%",
+    rotate: '20deg',
+    repeat: '-1',
+    yoyo: true,
+    ease:Linear.easeNone
+})
 
 let updateChances = () => {
-    document.getElementById('chancesLeft').textContent = guessOpportunities;
-} 
+    chancesLeftDisplay.style.color = 'black';
+    chancesLeftDisplay.textContent = guessOpportunities;
+    if(guessOpportunities <= 2){
+        chancesLeftDisplay.style.color = 'red';
+    } 
+}
 
-fetch('https://spanish-random-words.p.rapidapi.com/random',{
-    headers: {
-        'x-rapidapi-key': '313804c0b6mshe3be3db0ce29dcap1f2df8jsnf3b7b339dba4',
-        'x-rapidapi-host': 'spanish-random-words.p.rapidapi.com'
-      }
-}).then(response => response.json()).then((data) => {
-    word = data.body.Word;
-    console.log(data.body)
-    wordDescription = data.body.DefinitionMD;
-    setupGame();
-});
+let resetGame = () => {
+    deathTL.play(0).pause();
+    guessOpportunities = 6;
+    wordArray = [];
+    guessedLetters = [];
+    wrongGuessedLetters = [];
+    lettersLeftToGuess = [];
+    letterGuess.disabled = false;
+    wordDisplay.innerHTML = '';
+    wrongLettersContainer.innerHTML = '';
+    wordDescriptionHtml.style.display = 'none';
+    restartButton.style.display = 'none';
+    savedTL.pause();
+
+    updateChances();
+    init();
+}
+
+const init = () => {
+    loadingMessage.style.display = 'block';
+    updateChances();
+
+    fetch('https://spanish-random-words.p.rapidapi.com/random',{
+        headers: {
+            'x-rapidapi-key': '313804c0b6mshe3be3db0ce29dcap1f2df8jsnf3b7b339dba4',
+            'x-rapidapi-host': 'spanish-random-words.p.rapidapi.com'
+          }
+    }).then(response => response.json()).then((data) => {
+        word = data.body.Word;
+        wordDescription = data.body.DefinitionMD;
+        loadingMessage.style.display = 'none';
+        setupGame();
+    });
+}
+
+init();
