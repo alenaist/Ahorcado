@@ -234,7 +234,14 @@ const init = () => {
     loadingMessage.style.display = 'block';
     updateChances();
 
-    fetch('https://palabras-aleatorias-public-api.herokuapp.com/random').then(response => response.json()).then((data) => {
+    fetch('https://palabras-aleatorias-public-api.herokuapp.com/random', {
+
+        headers: new Headers({
+            'Content-Type': 'application/json',
+            'Access-Control-Allow-Origin': '*',
+        })
+        
+    }).then(response => response.json()).then((data) => {
         word = data.body.Word;
         wordDescription = data.body.DefinitionMD;
         loadingMessage.style.display = 'none';
