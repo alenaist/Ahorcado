@@ -236,11 +236,8 @@ const init = () => {
 
     fetch('https://palabras-aleatorias-public-api.herokuapp.com/random', {
 
-        headers: new Headers({
-            'Content-Type': 'application/json',
-            'Access-Control-Allow-Origin': '*',
-        })
-        
+        mode: 'no-cors'
+
     }).then(response => response.json()).then((data) => {
         word = data.body.Word;
         wordDescription = data.body.DefinitionMD;
